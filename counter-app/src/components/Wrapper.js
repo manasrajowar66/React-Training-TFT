@@ -1,76 +1,119 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Counter from './Counter';
-import playIcon from '../assets/round-play-button.png';
-import stopIcon from '../assets/stop-button.png';
+import React, { Component } from 'react'
+import Counter from './Counter'
+import playIcon from '../assets/round-play-button.png'
+import stopIcon from '../assets/stop-button.png'
 
-const Wrapper = () => {
-    const inputRef = useRef();
-    const [counter, setCounter] = useState(0);
-    const [timer, setTimer] = useState(null);
-    const [isTimerStart, setIsTimerStart] = useState(false);
-
-
-    useEffect(() => {
-
-        if (timer) { // if a timer already exist then it first clear the old timer
-            clearInterval(timer)
+class Wrapper extends Component {
+    constructor() {
+        super()
+        this.state = {
+            startFrom: 0,
+            counter: 0,
+            timer: null,
+            isTimerStart: false,
         }
-        if (isTimerStart) { // if the user click the start button then a new time will start
-            setTimer(
-                setInterval(() => {
-                    setCounter((prevState) => prevState + 1)
-                }, 1000),
-            )
-        }
-        return () => { // if component remove from DOM then it will clear the timer from memory
-            clearInterval(timer)
-        }
-        // eslint-disable-next-line
-    }, [isTimerStart])
+    }
 
-    const onStartHandler = () => { // to handle the timer on start button click
-        const value = inputRef.current.value;
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.isTimerStart !== this.state.isTimerStart) {
+            if (this.state.timer) {
+                // if a timer already exist then it first clear the old timer
+                clearInterval(this.state.timer)
+            }
+            if (this.state.isTimerStart) {
+                // if the user click the start button then a new time will start
+                this.setState({
+                    timer: setInterval(() => {
+                        this.setState((prevState2) => ({
+                            counter: prevState2.counter + 1,
+                        }))
+                    }, 1000),
+                })
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.state.timer)
+    }
+
+    onChangeHandler(event) {
+        const value = event.target.value
+        this.setState({ startFrom: parseInt(value) })
+    }
+
+    onStartHandler() {
+        const { startFrom, timer, isTimerStart } = this.state
         if (!timer || (isTimerStart && timer)) {
-            setCounter(parseInt(value));
+            this.setState({ counter: startFrom })
         }
-        setIsTimerStart(true);
-    }
-    const onStopHandler = () => { // to stop the timer on stop button click
-        setIsTimerStart(false);
-    }
-    const onDeleteHandler = () => { // to delete the timer on delete button click
-        clearInterval(timer);
-        setTimer(null);
-        setIsTimerStart(false);
-        setCounter(0);
+        this.setState({ isTimerStart: true })
     }
 
-    return (
-        <div className="container">
-            <div className='header'>
-                <h2>Counter App</h2>
-            </div>
-            <div className="card">
-                <Counter count={counter} />
-                <div className="input-field">
-                    <label>Start from</label>
-                    <input type="number" defaultValue="0" ref={inputRef} />
-                </div>
+    onStopHandler() {
+        this.setState({ isTimerStart: false })
+    }
 
-                <div className="action-field">
-                    <button className="btn btn__success mx" onClick={onStartHandler}>
-                        <img alt='play-icon' style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} src={playIcon} />
-                        Start
-                    </button>
-                    <button className="btn btn__outlined mx" onClick={onStopHandler}>
-                        <img alt='stop-icon' style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} src={stopIcon} />
-                        Stop
-                    </button>
-                    <button className="btn btn__delete" onClick={onDeleteHandler}>Delete</button>
+    onDeleteHandler() {
+        clearInterval(this.state.timer)
+        this.setState({
+            timer: null,
+            isTimerStart: false,
+            counter: 0,
+        })
+    }
+
+    render() {
+        return (
+            <div className="container">
+                <div className="header">
+                    <h1>Counter App</h1>
+                </div>
+                <div className="card">
+                    <Counter count={this.state.counter} />
+                    <div className="input-field">
+                        <label>Start from</label>
+                        <input
+                            type="number"
+                            defaultValue="0"
+                            onChange={this.onChangeHandler.bind(this)}
+                        />
+                    </div>
+
+                    <div className="action-field">
+                        <button
+                            className="btn btn__success mx"
+                            onClick={this.onStartHandler.bind(this)}
+                        >
+                            <img
+                                alt="play-icon"
+                                style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}
+                                src={playIcon}
+                            />
+                            Start
+                        </button>
+                        <button
+                            className="btn btn__outlined mx"
+                            onClick={this.onStopHandler.bind(this)}
+                        >
+                            <img
+                                alt="stop-icon"
+                                style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}
+                                src={stopIcon}
+                            />
+                            Stop
+                        </button>
+                        <button
+                            className="btn btn__delete"
+                            onClick={this.onDeleteHandler.bind(this)}
+                        >
+                            Delete
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        )
+    }
 }
 
 export default Wrapper

@@ -1,9 +1,15 @@
 import Wrapper from "./components/Wrapper";
+import { Component } from "react";
 
-function App() {
-  return (
-    <Wrapper />
-  );
+
+class App extends Component {
+  render() {
+    return (
+      <Wrapper />
+    );
+  }
 }
+
+
 
 export default App;
