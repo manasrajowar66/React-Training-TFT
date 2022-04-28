@@ -24,8 +24,8 @@ class Wrapper extends Component {
                 // if the user click the start button then a new time will start
                 this.setState({
                     timer: setInterval(() => {
-                        this.setState((prevState2) => ({
-                            counter: prevState2.counter + 1,
+                        this.setState((prevState) => ({
+                            counter: prevState.counter + 1,
                         }))
                     }, 1000),
                 })
@@ -33,7 +33,7 @@ class Wrapper extends Component {
         }
     }
 
-    componentWillUnmount() {
+    componentWillUnmount() { // if component remove from DOM then it will clear the timer from memory
         clearInterval(this.state.timer)
     }
 
