@@ -48,7 +48,7 @@ const Wrapper = () => {
     return (
         <div className="container">
             <div className='header'>
-                <h2>Counter App</h2>
+                <h1>Counter App</h1>
             </div>
             <div className="card">
                 <Counter count={counter} />
@@ -60,13 +60,13 @@ const Wrapper = () => {
                 <div className="action-field">
                     <button className="btn btn__success mx" onClick={onStartHandler}>
                         <img alt='play-icon' style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} src={playIcon} />
-                        Start
+                        START
                     </button>
                     <button className="btn btn__outlined mx" onClick={onStopHandler}>
                         <img alt='stop-icon' style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} src={stopIcon} />
-                        Stop
+                        STOP
                     </button>
-                    <button className="btn btn__delete" onClick={onDeleteHandler}>Delete</button>
+                    <button className="btn btn__delete" onClick={onDeleteHandler}>DELETE</button>
                 </div>
             </div>
         </div>
