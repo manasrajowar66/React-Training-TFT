@@ -6,12 +6,16 @@ import stopIcon from '../assets/stop-button.png'
 class Wrapper extends Component {
     constructor() {
         super()
-        this.state = {
+        this.state = {}
+    }
+
+    componentDidMount() {
+        this.setState({
             startFrom: 0,
             counter: 0,
             timer: null,
             isTimerStart: false,
-        }
+        })
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -33,7 +37,8 @@ class Wrapper extends Component {
         }
     }
 
-    componentWillUnmount() { // if component remove from DOM then it will clear the timer from memory
+    componentWillUnmount() {
+        // if component remove from DOM then it will clear the timer from memory
         clearInterval(this.state.timer)
     }
 
