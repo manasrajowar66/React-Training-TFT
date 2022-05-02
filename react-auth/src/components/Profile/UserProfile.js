@@ -1,12 +1,14 @@
 import ProfileForm from './ProfileForm';
-import AuthContext from '../../store/auth-context';
-import { useContext } from 'react';
+//import AuthContext from '../../store/auth-context';
+//import { useContext } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import classes from './UserProfile.module.css';
 
 const UserProfile = () => {
-  const authCtx = useContext(AuthContext);
-  const { token } = authCtx;
+  //const authCtx = useContext(AuthContext);
+  //const { token } = authCtx;
+  const token = useSelector(state => state.auth.token);
   const history = useHistory();
   const onChangePassword = async (newPassword) => {
     try {

@@ -1,6 +1,8 @@
 import { Switch, Route } from 'react-router-dom';
-import { useContext } from 'react';
-import AuthContext from './store/auth-context';
+import { useEffect } from 'react';
+//import AuthContext from './store/auth-context';
+import { useSelector, useDispatch } from 'react-redux';
+import { authActions } from './store/auth-slice';
 import Layout from './components/Layout/Layout';
 import UserProfile from './components/Profile/UserProfile';
 import AuthPage from './pages/AuthPage';
@@ -8,7 +10,16 @@ import HomePage from './pages/HomePage';
 import { Redirect } from 'react-router-dom';
 
 function App() {
-  const authCtx = useContext(AuthContext);
+  //const authCtx = useContext(AuthContext);
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      dispatch(authActions.login({ token }));
+
+    }
+  }, [dispatch])
   return (
     <Layout>
       <Switch>
@@ -16,14 +27,14 @@ function App() {
           <HomePage />
         </Route>
         {
-          !authCtx.isLoggedIn &&
+          !isLoggedIn &&
           <Route path='/auth'>
             <AuthPage />
           </Route>
         }
         <Route path='/profile'>
-          {authCtx.isLoggedIn && <UserProfile />}
-          {!authCtx.isLoggedIn && <Redirect to="/auth" />}
+          {isLoggedIn && <UserProfile />}
+          {!isLoggedIn && <Redirect to="/auth" />}
         </Route>
         <Route path="*">
           <Redirect to="/" />
