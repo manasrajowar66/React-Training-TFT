@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router'
-import MeetupDetail from '../../components/meetups/MeetupDetail'
+import MeetupDetail from '../../components/meetups/MeetupDetail';
+import { MongoClient, ObjectId } from 'mongodb';
+import Head from 'next/head';
 
 const DUMMY_MEETUPS = [
     {
@@ -36,23 +38,72 @@ const DUMMY_MEETUPS = [
     },
 ]
 
-const MeetUpDetails = () => {
-    const router = useRouter()
-    const meetupId = router.query.meetupID
-    const index = DUMMY_MEETUPS.findIndex((meetup) => meetup.id === meetupId)
-    if (index === -1) {
-        return <h1>No MeetUp Found</h1>
-    }
+const MeetUpDetails = (props) => {
+    // const router = useRouter()
+    // const meetupId = router.query.meetupID
+    const { meetupData } = props;
+    // const index = DUMMY_MEETUPS.findIndex((meetup) => meetup.id === meetupId)
+    // if (index === -1) {
+    //     return <h1>No MeetUp Found</h1>
+    // }
     return (
         <>
+            <Head>
+                <title>{meetupData.title}</title>
+                <meta name="description" content={meetupData.description} />
+            </Head>
             <MeetupDetail
-                image={DUMMY_MEETUPS[index].image}
-                title={DUMMY_MEETUPS[index].title}
-                address={DUMMY_MEETUPS[index].address}
-                description={DUMMY_MEETUPS[index].description}
+                image={meetupData.image}
+                title={meetupData.title}
+                address={meetupData.address}
+                description={meetupData.description}
             />
         </>
     )
+}
+
+
+export async function getStaticPaths() {
+    const client = await MongoClient.connect(
+        'mongodb+srv://manasrajowar:XWJzu8dAjZHKXhXq@cluster0.gwwmy.mongodb.net/meetups?retryWrites=true&w=majority',
+    )
+    const db = client.db()
+
+    const meetupsCollections = db.collection('meetups')
+
+    const meetups = await meetupsCollections.find({}, { _id: 1 }).toArray();
+    client.close()
+    return {
+        fallback: false,
+        paths: meetups.map(meetup => ({
+            params: { meetupID: meetup._id.toString() }
+        }))
+    }
+}
+
+
+export async function getStaticProps(context) {
+    const meetupId = context.params.meetupID;
+    const client = await MongoClient.connect(
+        'mongodb+srv://manasrajowar:XWJzu8dAjZHKXhXq@cluster0.gwwmy.mongodb.net/meetups?retryWrites=true&w=majority',
+    )
+    const db = client.db()
+
+    const meetupsCollections = db.collection('meetups')
+
+    const meetup = await meetupsCollections.findOne({ _id: ObjectId(meetupId) });
+    client.close()
+    return {
+        props: {
+            meetupData: {
+                id: meetup._id.toString(),
+                image: meetup.image,
+                title: meetup.title,
+                address: meetup.address,
+                description: meetup.description
+            }
+        }
+    }
 }
 
 export default MeetUpDetails

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Counter from './Counter';
 import playIcon from '../assets/round-play-button.png';
 import stopIcon from '../assets/stop-button.png';
+import styles from './Wrapper.module.css';
 
 const Wrapper = () => {
     const inputRef = useRef();
@@ -11,7 +12,7 @@ const Wrapper = () => {
 
 
     useEffect(() => {
-
+        console.log("logged");
         if (timer) { // if a timer already exist then it first clear the old timer
             clearInterval(timer)
         }
@@ -28,17 +29,24 @@ const Wrapper = () => {
         // eslint-disable-next-line
     }, [isTimerStart])
 
-    const onStartHandler = () => { // to handle the timer on start button click
+
+    // on start it fetch the current entered value and pass through the couter state
+    const onStartHandler = () => {
         const value = inputRef.current.value;
         if (!timer || (isTimerStart && timer)) {
             setCounter(parseInt(value));
         }
         setIsTimerStart(true);
     }
-    const onStopHandler = () => { // to stop the timer on stop button click
+
+
+    // on stop it will pause the timer
+    const onStopHandler = () => {
         setIsTimerStart(false);
     }
-    const onDeleteHandler = () => { // to delete the timer on delete button click
+
+    // on delete it will clear the timer and remove the counter from DOM
+    const onDeleteHandler = () => {
         clearInterval(timer);
         setTimer(null);
         setIsTimerStart(false);
@@ -46,24 +54,24 @@ const Wrapper = () => {
     }
 
     return (
-        <div className="container">
-            <div className='header'>
+        <div className={`${styles.container}`}>
+            <div className={`${styles.header}`} >
                 <h1>Counter App</h1>
             </div>
-            <div className="card">
-                <Counter count={counter} />
-                <div className="input-field">
+            <div className={`${styles.card}`}>
+                {(isTimerStart || timer) && <Counter count={counter} />}
+                <div className={`${styles["input-field"]}`}>
                     <label>Start from</label>
                     <input type="number" defaultValue="0" ref={inputRef} />
                 </div>
 
-                <div className="action-field">
+                <div className={`${styles["action-field"]}`}>
                     <button className="btn btn__success mx" onClick={onStartHandler}>
-                        <img alt='play-icon' style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} src={playIcon} />
+                        <img alt='play-icon' className={`${styles.icons}`} src={playIcon} />
                         START
                     </button>
                     <button className="btn btn__outlined mx" onClick={onStopHandler}>
-                        <img alt='stop-icon' style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }} src={stopIcon} />
+                        <img alt='stop-icon' className={`${styles.icons}`} src={stopIcon} />
                         STOP
                     </button>
                     <button className="btn btn__delete" onClick={onDeleteHandler}>DELETE</button>
